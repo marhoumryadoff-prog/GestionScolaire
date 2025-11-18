@@ -278,7 +278,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['numero_etudiant']) &&
 
 <script>
 document.getElementById('sendBulletinBtn').addEventListener('click', function(){
-  if (!confirm('Voulez-vous envoyer votre bulletin à l\\'adresse enregistrée ?')) return;
+  if (!confirm('Voulez-vous envoyer votre bulletin à l\'adresse enregistrée ?')) return;
   var formData = new FormData();
   // send the numero (if you keep it in a hidden field) or rely on session
   formData.append('numero_etudiant', '<?php echo htmlspecialchars($etudiant_info['numero_etudiant'] ?? ''); ?>');
@@ -286,13 +286,12 @@ document.getElementById('sendBulletinBtn').addEventListener('click', function(){
   var btn = this;
   btn.disabled = true;
   document.getElementById('sendStatus').textContent = 'Envoi en cours...';
-
-  fetch('student_send_bulletin.php', {
+  fetch('send_bulletin.php', {
     method: 'POST',
     body: formData,
     credentials: 'same-origin'
-  }).then(function(res){ return res.json(); })
-    .then(function(json){
+  }).then(res => res.json())
+    .then(json => {
       if (json.status === 'ok') {
         document.getElementById('sendStatus').textContent = '✅ Email envoyé';
       } else {
@@ -300,7 +299,7 @@ document.getElementById('sendBulletinBtn').addEventListener('click', function(){
       }
       btn.disabled = false;
     }).catch(function(err){
-      document.getElementById('sendStatus').textContent = '❌ Erreur réseau';
+      document.getElementById('sendStatus').textContent = '❌ Erreur réseau : ' + (err);
       btn.disabled = false;
     });
 });
