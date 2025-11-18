@@ -1,0 +1,52 @@
+-- Création du tableau des Notes
+-- Clé primaire composée (Num_Etudiant, Code_Module) pour assurer l'unicité d'une note par étudiant et par module.
+CREATE TABLE IF NOT EXISTS Notes (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    Num_Etudiant VARCHAR(50) NOT NULL,
+    Code_Module VARCHAR(50) NOT NULL,
+    Note DECIMAL(4, 2) NULL, -- Note sur 20.00
+    -- L'ajout de Coefficient et DésignationModule dans la table Notes n'est pas nécessaire
+    -- car on peut les joindre via la table Modules.
+    
+    -- Contrainte d'unicité pour garantir une seule note par étudiant et par module
+    UNIQUE KEY unique_note_module (Num_Etudiant, Code_Module),
+    
+    -- Clé étrangère vers la table etudiants
+    FOREIGN KEY (Num_Etudiant) REFERENCES etudiants(numero_etudiant) ON DELETE CASCADE,
+    
+    -- Clé étrangère vers la table modules
+    FOREIGN KEY (Code_Module) REFERENCES modules(CodeModule) ON DELETE CASCADE
+);
+
+-- Insertion d'une note de test (supposons que l'étudiant '1' existe et le module 'BDD301' existe)
+-- Étudiant '1' (Sami Benali) et module BDD301 (Bases de Données)
+INSERT INTO Notes (Num_Etudiant, Code_Module, Note) VALUES 
+('1', 'BDD301', 14.50),
+('1', 'ALGO201', 18.00);
+
+-- Insertion d'une note pour un autre étudiant
+INSERT INTO Notes (Num_Etudiant, Code_Module, Note) VALUES 
+('3', 'PROG201', 10.00);
+
+
+
+
+-- Étape 1 : Modification de la table etudiants pour ajouter 'Mlle' à l'ENUM de civilite
+-- (If you ran this before, running it again might cause a warning, but it's safe.)
+ALTER TABLE etudiants
+MODIFY civilite ENUM('M', 'Mme', 'Mlle') NULL;
+
+-- Étape 2 : Modification de la table modules pour ajouter Coefficient (if not done)
+ALTER TABLE modules
+ADD COLUMN Coefficient DECIMAL(4, 2) NULL;
+
+-- Étape 3 : Création de la table Notes (if not done)
+CREATE TABLE IF NOT EXISTS Notes (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    Num_Etudiant VARCHAR(50) NOT NULL,
+    Code_Module VARCHAR(50) NOT NULL,
+    Note DECIMAL(4, 2) NULL,
+    UNIQUE KEY unique_note_module (Num_Etudiant, Code_Module),
+    FOREIGN KEY (Num_Etudiant) REFERENCES etudiants(numero_etudiant) ON DELETE CASCADE,
+    FOREIGN KEY (Code_Module) REFERENCES modules(CodeModule) ON DELETE CASCADE
+);

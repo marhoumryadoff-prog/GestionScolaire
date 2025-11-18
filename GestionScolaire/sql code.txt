@@ -1,0 +1,152 @@
+-- إنشاء قاعدة البيانات
+CREATE DATABASE IF NOT EXISTS base_etudiants_tp2_2025;
+USE base_etudiants_tp2_2025;
+
+-- جدول الجنسيات
+CREATE TABLE IF NOT EXISTS nationalites (
+    id_nationalite INT AUTO_INCREMENT PRIMARY KEY,
+    libelle_nationalite VARCHAR(100) NOT NULL UNIQUE
+);
+
+-- جدول الرياضات
+CREATE TABLE IF NOT EXISTS sports (
+    id_sport INT AUTO_INCREMENT PRIMARY KEY,
+    libelle_sport VARCHAR(100) NOT NULL UNIQUE
+);
+
+-- جدول الشعب
+CREATE TABLE IF NOT EXISTS filières (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    CodeFilière VARCHAR(20) NOT NULL UNIQUE,
+    Désignation VARCHAR(100) NOT NULL
+);
+
+-- جدول الطلاب
+CREATE TABLE IF NOT EXISTS etudiants (
+    id_etudiant INT AUTO_INCREMENT PRIMARY KEY,
+    numero_etudiant VARCHAR(50) NOT NULL UNIQUE,
+    nom_etudiant VARCHAR(100) NOT NULL,
+    prenom_etudiant VARCHAR(100) NOT NULL,
+    civilite ENUM('M', 'Mme') NULL,
+    date_naissance DATE NULL,
+    adresse TEXT NULL,
+    localisation VARCHAR(100) NULL,
+    platforme VARCHAR(50) NULL,
+    application VARCHAR(50) NULL,
+    photo VARCHAR(255) NULL,
+    id_nationalite INT NULL,
+    FilièreId INT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_nationalite) REFERENCES nationalites(id_nationalite) ON DELETE SET NULL,
+    FOREIGN KEY (FilièreId) REFERENCES filières(Id) ON DELETE SET NULL
+);
+
+-- جدول العلاقة بين الطلاب والرياضات
+CREATE TABLE IF NOT EXISTS etudiant_sports (
+    id_etudiant_sport INT AUTO_INCREMENT PRIMARY KEY,
+    id_etudiant INT NOT NULL,
+    id_sport INT NOT NULL,
+    FOREIGN KEY (id_etudiant) REFERENCES etudiants(id_etudiant) ON DELETE CASCADE,
+    FOREIGN KEY (id_sport) REFERENCES sports(id_sport) ON DELETE CASCADE,
+    UNIQUE KEY unique_etudiant_sport (id_etudiant, id_sport)
+);
+
+-- جدول الأساتذة
+CREATE TABLE IF NOT EXISTS enseignants (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    Numéro VARCHAR(50) NOT NULL UNIQUE,
+    Civilité ENUM('Mr', 'Mme') NOT NULL,
+    Nom VARCHAR(100) NOT NULL,
+    Prénom VARCHAR(100) NOT NULL,
+    Adresse TEXT NULL,
+    DateNaissance DATE NULL,
+    LieuNaissance VARCHAR(100) NULL,
+    PaysId INT NULL,
+    Grade ENUM('Assistant', 'MAB', 'MAA', 'MCB', 'MCA', 'Professeur') NOT NULL,
+    Spécialité ENUM('Informatique', 'Mathématiques', 'Anglais', 'autres') NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (PaysId) REFERENCES nationalites(id_nationalite) ON DELETE SET NULL
+);
+
+-- جدول الوحدات
+CREATE TABLE IF NOT EXISTS modules (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    CodeModule VARCHAR(50) NOT NULL UNIQUE,
+    DésignationModule VARCHAR(100) NOT NULL,
+    FilièreId INT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (FilièreId) REFERENCES filières(Id) ON DELETE SET NULL
+);
+
+-- إدخال بيانات أولية للجنسيات
+INSERT INTO nationalites (libelle_nationalite) VALUES 
+('Marocaine'),
+('Française'),
+('Algérienne'),
+('Tunisienne'),
+('Espagnole'),
+('Italienne'),
+('Américaine'),
+('Canadienne'),
+('Belge'),
+('Allemande');
+
+-- إدخال بيانات أولية للرياضات
+INSERT INTO sports (libelle_sport) VALUES 
+('Football'),
+('Basketball'),
+('Tennis'),
+('Natation'),
+('Athlétisme'),
+('Volleyball'),
+('Handball'),
+('Judo'),
+('Karate'),
+('Boxe');
+
+-- إدخال بيانات أولية للشعب
+INSERT INTO filières (CodeFilière, Désignation) VALUES 
+('TC', 'Tronc Commun'),
+('2SC', '2ème Science'),
+('3ISIL', '3ème Informatique'),
+('4IID', '4ème Informatique'),
+('2SM', '2ème Science Maths'),
+('1BAC', '1ère Baccalauréat'),
+('2BAC', '2ème Baccalauréat');
+
+-- إدخال بيانات أولية للوحدات
+INSERT INTO modules (CodeModule, DésignationModule, FilièreId) VALUES 
+('MATH101', 'Mathématiques Fondamentales', 1),
+('PHY101', 'Physique Générale', 1),
+('INFO101', 'Introduction à l'Informatique', 1),
+('PROG201', 'Programmation Avancée', 3),
+('BDD301', 'Bases de Données', 4),
+('WEB401', 'Développement Web', 4),
+('ALGO201', 'Algorithmique', 3);
+-- إدخال بيانات أولية للأساتذة
+INSERT INTO enseignants (Numéro, Civilité, Nom, Prénom, Adresse, DateNaissance, LieuNaissance, PaysId, Grade, Spécialité) VALUES 
+('ENS001', 'Mr', 'Alaoui', 'Mohammed', '123 Rue Hassan II, Casablanca', '1980-05-15', 'Casablanca', 1, 'Professeur', 'Informatique'),
+('ENS002', 'Mme', 'Benali', 'Fatima', '456 Avenue Mohammed V, Rabat', '1985-08-22', 'Rabat', 1, 'MCA', 'Mathématiques'),
+('ENS003', 'Mr', 'Smith', 'John', '789 Main Street, Paris', '1978-03-10', 'Paris', 2, 'MCB', 'Anglais');
+
+-- إنشاء مستخدم للوصول إلى قاعدة البيانات (اختياري)
+CREATE USER IF NOT EXISTS 'user_paw'@'localhost' IDENTIFIED BY 'password123';
+GRANT ALL PRIVILEGES ON base_etudiants_tp2_2025. TO 'user_paw'@'localhost';
+FLUSH PRIVILEGES;
+
+
+
+INSERT INTO etudiants (
+    numero_etudiant, nom_etudiant, prenom_etudiant, civilite, date_naissance,
+    adresse, localisation, platforme, application, photo, id_nationalite, FilièreId
+) VALUES
+('1', 'Benali', 'Sami', 'M', '2002-03-15', '12 Rue des Roses', 'Alger', 'Moodle', 'Mobile', 'photos/sami.jpg', 1, 2),
+('2', 'Zerrouki', 'Ines', 'Mme', '2001-11-22', '45 Avenue Emir', 'Oran', 'Google Classroom', 'Web', 'photos/ines.jpg', 1, 1),
+('3', 'Haddad', 'Yacine', 'M', '2003-01-07', 'Lotissement 24', 'Constantine', 'Moodle', 'Mobile', 'photos/yacine.jpg', 2, 3),
+('4', 'Brahimi', 'Leila', 'Mme', '2000-08-19', 'Cité Universitaire', 'Annaba', 'Teams', 'Web', 'photos/leila.jpg', 3, 2),
+('5', 'Meziane', 'Walid', 'M', '2002-05-01', 'Rue 14 Juillet', 'Tlemcen', 'Moodle', 'Mobile', 'photos/walid.jpg', 1, 1),
+('6', 'Cherif', 'Nadia', 'Mme', '2001-09-30', 'Rue du Port', 'Bejaia', 'Google Classroom', 'Web', 'photos/nadia.jpg', 4, 2),
+('7', 'Khelifi', 'Omar', 'M', '2003-02-11', 'Cité 150 Logements', 'Setif', 'Teams', 'Mobile', 'photos/omar.jpg', 1, 3),
+('8', 'Touati', 'Sabrina', 'Mme', '2002-12-05', 'Rue de la Liberté', 'Batna', 'Moodle', 'Web', 'photos/sabrina.jpg', 2, 1),
+('9', 'Belkacem', 'Adel', 'M', '2001-04-27', 'Rue des Martyrs', 'Blida', 'Google Classroom', 'Mobile', 'photos/adel.jpg', 3, 2),
+('10', 'Djebbar', 'Rania', 'Mme', '2003-06-14', 'Cité El-Amel', 'Mostaganem', 'Moodle', 'Web', 'photos/rania.jpg', 1, 3);

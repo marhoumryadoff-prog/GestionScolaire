@@ -1,0 +1,47 @@
+<?php
+require_once 'connexion_base.php';
+$db = new ConnexionBase();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    $action = $_POST['action'];
+    
+    if ($action === 'ajouter' && isset($_POST['libelle_nationalite'])) {
+        $libelle_nationalite = trim($_POST['libelle_nationalite']);
+        
+        $verif = $db->pdo->prepare("SELECT id_nationalite FROM nationalites WHERE libelle_nationalite = ?");
+        $verif->execute([$libelle_nationalite]);
+        
+        if ($verif->rowCount() > 0) {
+            header("Location: gestion_nationalites.php?erreur=Nationalité déjà existante");
+            exit();
+        }
+        
+        $requete = $db->pdo->prepare("INSERT INTO nationalites (libelle_nationalite) VALUES (?)");
+        $requete->execute([$libelle_nationalite]);
+        
+        header("Location: gestion_nationalites.php?success=Nationalité ajoutée");
+        exit();
+    }
+}
+
+if (isset($_GET['action']) && $_GET['action'] === 'supprimer' && isset($_GET['id'])) {
+    $id_nationalite = intval($_GET['id']);
+    
+    $verif = $db->pdo->prepare("SELECT id_etudiant FROM etudiants WHERE id_nationalite = ?");
+    $verif->execute([$id_nationalite]);
+    
+    if ($verif->rowCount() > 0) {
+        header("Location: gestion_nationalites.php?erreur=Impossible de supprimer, des étudiants ont cette nationalité");
+        exit();
+    }
+    
+    $requete = $db->pdo->prepare("DELETE FROM nationalites WHERE id_nationalite = ?");
+    $requete->execute([$id_nationalite]);
+    
+    header("Location: gestion_nationalites.php?success=Nationalité supprimée");
+    exit();
+}
+
+header("Location: gestion_nationalites.php");
+exit();
+?>

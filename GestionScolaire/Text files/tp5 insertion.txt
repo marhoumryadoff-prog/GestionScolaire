@@ -1,0 +1,242 @@
+-- Use your specific database
+USE `base_etudiants_tp2_2025`;
+
+-- Note on Filière IDs (based on your dump):
+-- 1: TC (Tronc Commun)
+-- 2: 2SC (2ème Science)
+-- 3: 3ISIL (3ème Informatique)
+-- 4: 4IID (4ème Informatique)
+-- 5: 2SM (2ème Science Maths)
+-- 6: 1BAC (1ère Baccalauréat)
+-- 7: 2BAC (2ème Baccalauréat)
+
+INSERT IGNORE INTO `modules` (`CodeModule`, `DésignationModule`, `FilièreId`, `Coefficient`) VALUES
+-- ========================================================
+-- 1. Modules for TC (Tronc Commun) - ID 1 (Foundation/Intro)
+-- ========================================================
+('CS105', 'Initiation à la Programmation', 1, 3.00),
+('CS110', 'Outils Informatiques et Bureautique', 1, 1.50),
+('CS115', 'Logique et Résolution de Problèmes', 1, 2.50),
+('CS120', 'Structure Discrètes', 1, 3.50),
+('CS125', 'Introduction aux Systèmes d\'Exploitation', 1, 3.00),
+
+-- ========================================================
+-- 2. Modules for 2SC (2ème Science) - ID 2 (Advanced Math/Data)
+-- ========================================================
+('DATA205', 'Statistiques pour l\'Informatique', 2, 4.00),
+('CALC210', 'Calcul Différentiel et Intégral', 2, 5.00),
+('SECU215', 'Principes de la Sécurité', 2, 3.50),
+('CPRO220', 'Concepts de Programmation C', 2, 4.50),
+('WEB225', 'Fondamentaux du HTML/CSS', 2, 2.00),
+
+-- ========================================================
+-- 3. Modules for 3ISIL (3ème Informatique) - ID 3 (Development/Systems)
+-- ========================================================
+('POO305', 'Programmation Orientée Objet (Java)', 3, 5.50),
+('RESAU310', 'Réseaux et Protocoles TCP/IP', 3, 4.00),
+('ARCH315', 'Architecture des Ordinateurs II', 3, 3.50),
+('AGILE320', 'Méthodologie Agile et Scrum', 3, 2.50),
+('DATA325', 'Stockage et Bases NoSQL', 3, 4.50),
+
+-- ========================================================
+-- 4. Modules for 4IID (4ème Informatique) - ID 4 (Advanced Development)
+-- ========================================================
+('CLOUD405', 'Développement d\'Applications Cloud', 4, 5.00),
+('DEVOPS410', 'Conteneurisation et DevOps', 4, 4.50),
+('IA415', 'Machine Learning', 4, 5.50),
+('BIGD420', 'Traitement des Données Massives', 4, 4.00),
+('API425', 'Conception d\'APIs REST', 4, 3.00),
+
+-- ========================================================
+-- 5. Modules for 2SM (2ème Science Maths) - ID 5 (Applied Computing)
+-- ========================================================
+('SIMU505', 'Simulation et Modélisation', 5, 4.00),
+('ALGO510', 'Analyse d\'Algorithmes', 5, 5.00),
+('CSCI515', 'Programmation Scientifique (Matlab/R)', 5, 4.50),
+('WEB520', 'Développement Full-Stack (MERN/MEAN)', 5, 4.00),
+('SECURE525', 'Cryptographie et Sécurité des Communications', 5, 5.50),
+
+-- ========================================================
+-- 6. Modules for 1BAC (1ère Baccalauréat) - ID 6 (Basic Tools/Math Prep)
+-- ========================================================
+('INFO605', 'Techniques de Recherche Documentaire', 6, 1.50),
+('CS610', 'Sécurité et Éthique sur Internet', 6, 1.00),
+('MATH615', 'Outils Mathématiques (Base 2/10)', 6, 2.00),
+('GRAP620', 'Manipulation Logiciels Graphiques', 6, 1.50),
+('PROJ625', 'Gestion de Petit Projet', 6, 2.50),
+
+-- ========================================================
+-- 7. Modules for 2BAC (2ème Baccalauréat) - ID 7 (Applied Project Work)
+-- ========================================================
+('PROJ705', 'Projet Annuel Informatique', 7, 5.00),
+('RES710', 'Installation et Maintenance PC', 7, 3.50),
+('BD715', 'Concepts de Bases de Données (SQL)', 7, 4.00),
+('HTML720', 'Création de Sites Statiques', 7, 3.00),
+('CYB725', 'Sensibilisation au Hacking Éthique', 7, 2.50);
+
+
+
+-------------------------------------------------------------
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+-- === SELECT THE DATABASE FIRST ===
+USE `base_etudiants_tp2_2025`;
+
+-- Find the highest existing simple integer student number to continue the sequence
+SET @start_num = (SELECT IFNULL(MAX(CAST(numero_etudiant AS UNSIGNED)), 0) + 1 FROM etudiants WHERE CHAR_LENGTH(numero_etudiant) < 5 AND numero_etudiant REGEXP '^[0-9]+$');
+
+-- Define helper lists (IDs 1-10 for Nat/Sport, 1-7 for Filière, etc.)
+-- Note: RAND() is used here for randomized data, but subsequent insertions below use a fixed value 
+-- to simulate the results of a fixed random generation. This ensures reliability in the script below.
+
+-- -----------------------------------------------------
+-- 1. INSERT 50 RANDOM ETUDIANTS (Sequential Numéros 23 - 72)
+-- -----------------------------------------------------
+INSERT INTO `etudiants` 
+    (`id_etudiant`, `numero_etudiant`, `nom_etudiant`, `prenom_etudiant`, `civilite`, `date_naissance`, `adresse`, `localisation`, `platforme`, `application`, `id_nationalite`, `FilièreId`) 
+VALUES
+(23, '23', 'Leroy', 'Yassine', 'M', DATE_SUB(CURDATE(), INTERVAL FLOOR(18 + (RAND(1) * 5)) YEAR), '45 Avenue du Port, Bloc 23', 'Alger', 'Windows,Android', 'Visual Studio', 3, 5),
+(24, '24', 'Fares', 'Sarah', 'Mme', DATE_SUB(CURDATE(), INTERVAL FLOOR(19 + (RAND(2) * 4)) YEAR), 'Rue des Roses N°24', 'Oran', 'macOS,iOS', 'Photoshop', 1, 2),
+(25, '25', 'Benali', 'Omar', 'M', DATE_SUB(CURDATE(), INTERVAL FLOOR(20 + (RAND(3) * 3)) YEAR), 'Boulevard du 1er Novembre, Bloc 25', 'Constantine', 'Linux,Web', 'Eclipse', 7, 7),
+(26, '26', 'Garcia', 'Lina', 'Mlle', DATE_SUB(CURDATE(), INTERVAL FLOOR(18 + (RAND(4) * 5)) YEAR), 'Cité Universitaire N°26', 'Setif', 'Android', 'Word,Excel', 9, 3),
+(27, '27', 'Martin', 'Walid', 'M', DATE_SUB(CURDATE(), INTERVAL FLOOR(19 + (RAND(5) * 4)) YEAR), '12 Rue des Roses N°27', 'Annaba', 'Windows', 'NetBeans', 5, 6),
+(28, '28', 'Roux', 'Chloé', 'Mme', DATE_SUB(CURDATE(), INTERVAL FLOOR(20 + (RAND(6) * 3)) YEAR), 'Avenue du Port N°28', 'Tlemcen', 'macOS', 'Autres', 2, 4),
+(29, '29', 'Touati', 'Lucas', 'M', DATE_SUB(CURDATE(), INTERVAL FLOOR(18 + (RAND(7) * 5)) YEAR), 'Place de la Liberté, Bloc 29', 'Blida', 'iOS', 'Visual Studio', 8, 1),
+(30, '30', 'Krim', 'Amine', 'M', DATE_SUB(CURDATE(), INTERVAL FLOOR(19 + (RAND(8) * 4)) YEAR), 'Résidence Émir N°30', 'Mostaganem', 'Linux', 'Photoshop', 10, 5),
+(31, '31', 'Bernard', 'Alice', 'Mlle', DATE_SUB(CURDATE(), INTERVAL FLOOR(20 + (RAND(9) * 3)) YEAR), '12 Rue des Roses N°31', 'Rabat', 'Web', 'Eclipse,NetBeans', 4, 3),
+(32, '32', 'Dubois', 'Manon', 'Mme', DATE_SUB(CURDATE(), INTERVAL FLOOR(18 + (RAND(10) * 5)) YEAR), 'Rue des Martyrs N°32', 'Lyon', 'Windows,iOS', 'PowerPoint', 1, 6),
+(33, '33', 'Perrin', 'Noah', 'M', DATE_SUB(CURDATE(), INTERVAL FLOOR(19 + (RAND(11) * 4)) YEAR), '45 Avenue Foch N°33', 'Marseille', 'Android', 'Word', 3, 2),
+(34, '34', 'Smith', 'Emma', 'Mlle', DATE_SUB(CURDATE(), INTERVAL FLOOR(20 + (RAND(12) * 3)) YEAR), 'Lotissement 24 N°34', 'Paris', 'macOS', 'Excel', 6, 4),
+(35, '35', 'Ouazani', 'Ethan', 'M', DATE_SUB(CURDATE(), INTERVAL FLOOR(18 + (RAND(13) * 5)) YEAR), 'Boulevard du 1er Novembre, Bloc 35', 'Nice', 'Linux,Web', 'Visual Studio', 2, 7),
+(36, '36', 'Zouaghi', 'Jade', 'Mme', DATE_SUB(CURDATE(), INTERVAL FLOOR(19 + (RAND(14) * 4)) YEAR), 'Avenue du Port N°36', 'Nantes', 'Windows', 'Photoshop', 8, 1),
+(37, '37', 'Martin', 'Karim', 'M', DATE_SUB(CURDATE(), INTERVAL FLOOR(20 + (RAND(15) * 3)) YEAR), 'Place de la Liberté N°37', 'Strasbourg', 'iOS,Android', 'NetBeans', 10, 5),
+(38, '38', 'Chen', 'Sarah', 'Mlle', DATE_SUB(CURDATE(), INTERVAL FLOOR(18 + (RAND(16) * 5)) YEAR), 'Résidence Émir N°38', 'Bordeaux', 'macOS', 'PowerPoint', 4, 3),
+(39, '39', 'Dupont', 'Gabriel', 'M', DATE_SUB(CURDATE(), INTERVAL FLOOR(19 + (RAND(17) * 4)) YEAR), '12 Rue des Roses N°39', 'Lille', 'Web', 'Word,Excel', 1, 6),
+(40, '40', 'Leroy', 'Inès', 'Mme', DATE_SUB(CURDATE(), INTERVAL FLOOR(20 + (RAND(18) * 3)) YEAR), '45 Avenue Foch N°40', 'Rennes', 'Windows,iOS', 'Eclipse', 3, 2),
+(41, '41', 'Garcia', 'Walid', 'M', DATE_SUB(CURDATE(), INTERVAL FLOOR(18 + (RAND(19) * 5)) YEAR), 'Lotissement 24 N°41', 'Reims', 'Android', 'Visual Studio', 6, 4),
+(42, '42', 'Williams', 'Lina', 'Mlle', DATE_SUB(CURDATE(), INTERVAL FLOOR(19 + (RAND(20) * 4)) YEAR), 'Rue des Martyrs N°42', 'Le Havre', 'Linux', 'Photoshop', 2, 7),
+(43, '43', 'Johnson', 'Léo', 'M', DATE_SUB(CURDATE(), INTERVAL FLOOR(20 + (RAND(21) * 3)) YEAR), 'Cité Universitaire N°43', 'Saint-Étienne', 'macOS,Web', 'NetBeans', 7, 1),
+(44, '44', 'Benali', 'Sofia', 'Mme', DATE_SUB(CURDATE(), INTERVAL FLOOR(18 + (RAND(22) * 5)) YEAR), '12 Rue des Roses N°44', 'Toulon', 'iOS', 'PowerPoint', 5, 5),
+(45, '45', 'Moore', 'Yassine', 'M', DATE_SUB(CURDATE(), INTERVAL FLOOR(19 + (RAND(23) * 4)) YEAR), 'Avenue du Port N°45', 'Grenoble', 'Windows', 'Word', 8, 3),
+(46, '46', 'Taylor', 'Chloé', 'Mlle', DATE_SUB(CURDATE(), INTERVAL FLOOR(20 + (RAND(24) * 3)) YEAR), 'Place de la Liberté N°46', 'Dijon', 'Linux,Android', 'Excel', 10, 6),
+(47, '47', 'Anderson', 'Amine', 'M', DATE_SUB(CURDATE(), INTERVAL FLOOR(18 + (RAND(25) * 5)) YEAR), 'Résidence Émir N°47', 'Angers', 'macOS,Web', 'Visual Studio', 4, 4),
+(48, '48', 'Thomas', 'Emma', 'Mme', DATE_SUB(CURDATE(), INTERVAL FLOOR(19 + (RAND(26) * 4)) YEAR), '45 Avenue Foch N°48', 'Nîmes', 'iOS', 'Photoshop', 1, 2),
+(49, '49', 'Jackson', 'Noah', 'M', DATE_SUB(CURDATE(), INTERVAL FLOOR(20 + (RAND(27) * 3)) YEAR), 'Lotissement 24 N°49', 'Villeurbanne', 'Windows,Android', 'NetBeans', 3, 7),
+(50, '50', 'White', 'Lina', 'Mlle', DATE_SUB(CURDATE(), INTERVAL FLOOR(18 + (RAND(28) * 5)) YEAR), 'Rue des Martyrs N°50', 'Clermont-Ferrand', 'Linux', 'PowerPoint', 6, 1),
+(51, '51', 'Harris', 'Ethan', 'M', DATE_SUB(CURDATE(), INTERVAL FLOOR(19 + (RAND(29) * 4)) YEAR), 'Cité Universitaire N°51', 'Aix-en-Provence', 'macOS', 'Word', 2, 5),
+(52, '52', 'Martin', 'Sarah', 'Mme', DATE_SUB(CURDATE(), INTERVAL FLOOR(20 + (RAND(30) * 3)) YEAR), '12 Rue des Roses N°52', 'Le Mans', 'Android,Web', 'Excel', 7, 3),
+(53, '53', 'Thompson', 'Lucas', 'M', DATE_SUB(CURDATE(), INTERVAL FLOOR(18 + (RAND(31) * 5)) YEAR), 'Boulevard du 1er Novembre, Bloc 53', 'Brest', 'Windows', 'Visual Studio', 5, 6),
+(54, '54', 'Garcia', 'Alice', 'Mlle', DATE_SUB(CURDATE(), INTERVAL FLOOR(19 + (RAND(32) * 4)) YEAR), 'Avenue du Port N°54', 'Tours', 'Linux', 'Photoshop', 8, 4),
+(55, '55', 'Martinez', 'Gabriel', 'M', DATE_SUB(CURDATE(), INTERVAL FLOOR(20 + (RAND(33) * 3)) YEAR), 'Place de la Liberté N°55', 'Amiens', 'macOS', 'NetBeans', 10, 2),
+(56, '56', 'Robinson', 'Jade', 'Mme', DATE_SUB(CURDATE(), INTERVAL FLOOR(18 + (RAND(34) * 5)) YEAR), 'Résidence Émir N°56', 'Limoges', 'iOS', 'PowerPoint', 4, 7),
+(57, '57', 'Clark', 'Omar', 'M', DATE_SUB(CURDATE(), INTERVAL FLOOR(19 + (RAND(35) * 4)) YEAR), '45 Avenue Foch N°57', 'Metz', 'Android,Web', 'Word', 9, 1),
+(58, '58', 'Rodriguez', 'Inès', 'Mlle', DATE_SUB(CURDATE(), INTERVAL FLOOR(20 + (RAND(36) * 3)) YEAR), 'Lotissement 24 N°58', 'Perpignan', 'Windows', 'Excel', 1, 5),
+(59, '59', 'Lewis', 'Walid', 'M', DATE_SUB(CURDATE(), INTERVAL FLOOR(18 + (RAND(37) * 5)) YEAR), 'Rue des Martyrs N°59', 'Besançon', 'Linux', 'Visual Studio', 3, 3),
+(60, '60', 'Lee', 'Manon', 'Mme', DATE_SUB(CURDATE(), INTERVAL FLOOR(19 + (RAND(38) * 4)) YEAR), 'Cité Universitaire N°60', 'Orléans', 'macOS,iOS', 'Photoshop', 6, 6),
+(61, '61', 'Walker', 'Karim', 'M', DATE_SUB(CURDATE(), INTERVAL FLOOR(20 + (RAND(39) * 3)) YEAR), '12 Rue des Roses N°61', 'Mulhouse', 'Android', 'NetBeans', 2, 4),
+(62, '62', 'Hall', 'Emma', 'Mlle', DATE_SUB(CURDATE(), INTERVAL FLOOR(18 + (RAND(40) * 5)) YEAR), 'Boulevard du 1er Novembre, Bloc 62', 'Caen', 'Windows,Web', 'PowerPoint', 7, 2),
+(63, '63', 'Allen', 'Yassine', 'M', DATE_SUB(CURDATE(), INTERVAL FLOOR(19 + (RAND(41) * 4)) YEAR), 'Avenue du Port N°63', 'Rouen', 'Linux', 'Word', 5, 7),
+(64, '64', 'Young', 'Lina', 'Mme', DATE_SUB(CURDATE(), INTERVAL FLOOR(20 + (RAND(42) * 3)) YEAR), 'Place de la Liberté N°64', 'Nancy', 'macOS', 'Excel', 8, 1),
+(65, '65', 'Hernandez', 'Amine', 'M', DATE_SUB(CURDATE(), INTERVAL FLOOR(18 + (RAND(43) * 5)) YEAR), 'Résidence Émir N°65', 'Argenteuil', 'iOS', 'Visual Studio', 10, 5),
+(66, '66', 'King', 'Sarah', 'Mlle', DATE_SUB(CURDATE(), INTERVAL FLOOR(19 + (RAND(44) * 4)) YEAR), '45 Avenue Foch N°66', 'Montreuil', 'Android,Web', 'Photoshop', 4, 3),
+(67, '67', 'Wright', 'Noah', 'M', DATE_SUB(CURDATE(), INTERVAL FLOOR(20 + (RAND(45) * 3)) YEAR), 'Lotissement 24 N°67', 'Saint-Denis', 'Windows', 'NetBeans', 1, 6),
+(68, '68', 'Lopez', 'Chloé', 'Mme', DATE_SUB(CURDATE(), INTERVAL FLOOR(18 + (RAND(46) * 5)) YEAR), 'Rue des Martyrs N°68', 'Versailles', 'Linux', 'PowerPoint', 3, 2),
+(69, '69', 'Hill', 'Ethan', 'M', DATE_SUB(CURDATE(), INTERVAL FLOOR(19 + (RAND(47) * 4)) YEAR), 'Cité Universitaire N°69', 'Nanterre', 'macOS,iOS', 'Word', 6, 4),
+(70, '70', 'Scott', 'Alice', 'Mlle', DATE_SUB(CURDATE(), INTERVAL FLOOR(20 + (RAND(48) * 3)) YEAR), '12 Rue des Roses N°70', 'Créteil', 'Android', 'Excel', 2, 7),
+(71, '71', 'Green', 'Omar', 'M', DATE_SUB(CURDATE(), INTERVAL FLOOR(18 + (RAND(49) * 5)) YEAR), 'Boulevard du 1er Novembre, Bloc 71', 'Pau', 'Windows,Web', 'Visual Studio', 7, 1),
+(72, '72', 'Adams', 'Léa', 'Mme', DATE_SUB(CURDATE(), INTERVAL FLOOR(19 + (RAND(50) * 4)) YEAR), 'Avenue du Port N°72', 'La Rochelle', 'Linux', 'Photoshop', 9, 5);
+
+-- -----------------------------------------------------
+-- 2. INSERT RANDOM SPORTS LINKS
+-- -----------------------------------------------------
+INSERT INTO `etudiant_sports` (`id_etudiant`, `id_sport`)
+SELECT 
+    t1.id_etudiant, 
+    s.id_sport
+FROM (SELECT id_etudiant FROM etudiants WHERE id_etudiant >= 23) t1
+JOIN `sports` s ON RAND() < 0.30 -- 30% chance for each sport
+ORDER BY t1.id_etudiant, RAND()
+LIMIT 70;
+
+-- -----------------------------------------------------
+-- 3. INSERT RANDOM NOTES
+-- -----------------------------------------------------
+-- Insert grades for 35% of the possible student-module combinations
+INSERT INTO `notes` (`Num_Etudiant`, `Code_Module`, `Note`)
+SELECT 
+    e.numero_etudiant, 
+    m.CodeModule,
+    ROUND(5 + (RAND() * 15), 2)
+FROM `etudiants` e
+JOIN `modules` m ON 1=1
+WHERE e.id_etudiant >= 23 
+AND RAND() < 0.35 -- Insert for about 35% of combinations
+ORDER BY RAND()
+LIMIT 200;
+
+COMMIT;
+
+
+
+
+-----------
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+USE `base_etudiants_tp2_2025`;
+
+-- Note on Sequential Numbers:
+-- Student IDs (id_etudiant) are arbitrarily assigned starting at 500 for safety, 
+-- but the Numéro (numero_etudiant) matches your requested sequence (1, 11-14, 16-22).
+
+-- -----------------------------------------------------
+-- 1. INSERT SPECIFIC SEQUENTIAL ETUDIANTS
+-- -----------------------------------------------------
+INSERT INTO `etudiants` 
+    (`id_etudiant`, `numero_etudiant`, `nom_etudiant`, `prenom_etudiant`, `civilite`, `date_naissance`, `adresse`, `localisation`, `platforme`, `application`, `id_nationalite`, `FilièreId`) 
+VALUES
+(501, '1', 'Touati', 'Zineb', 'Mlle', '2004-03-22', 'Cité des Mimosas N°501', 'Alger', 'Windows,Web', 'Word,Photoshop', 3, 3),
+(511, '11', 'Lamine', 'Samia', 'Mme', '2003-09-10', '45 Avenue de la République', 'Oran', 'macOS,iOS', 'Visual Studio', 1, 4),
+(512, '12', 'Boudiaf', 'Tarik', 'M', '2005-01-18', 'Résidence Émir, Bloc 12', 'Constantine', 'Linux', 'Eclipse', 2, 6),
+(513, '13', 'Saidi', 'Farah', 'Mlle', '2004-11-29', '10 Rue des Martyrs', 'Annaba', 'Android', 'NetBeans', 5, 2),
+(514, '14', 'Ziane', 'Yacine', 'M', '2003-07-05', 'Boulevard Principal, N°14', 'Blida', 'Windows', 'Excel', 4, 7),
+(516, '16', 'Hafsi', 'Amira', 'Mme', '2005-05-14', 'Place du 1er Novembre N°16', 'Tlemcen', 'macOS', 'PowerPoint', 8, 3),
+(517, '17', 'Kadi', 'Bilal', 'M', '2002-12-08', 'Rue des Jardins, Lot 17', 'Setif', 'Linux,Web', 'Visual Studio,Word', 10, 5),
+(518, '18', 'Moussaoui', 'Nour', 'Mlle', '2004-10-01', 'Avenue Foch N°18', 'Bejaia', 'iOS', 'Photoshop', 6, 1),
+(519, '19', 'Nouri', 'Zoubir', 'M', '2003-06-25', 'Cité El-Amel, N°19', 'Tiaret', 'Windows,Android', 'NetBeans', 9, 4),
+(520, '20', 'Rachid', 'Lyes', 'M', '2005-08-11', '12 Rue des Frères, N°20', 'Mascara', 'macOS', 'Eclipse', 1, 2),
+(521, '21', 'Slimani', 'Chaima', 'Mme', '2002-09-17', 'Résidence du Port, N°21', 'Skikda', 'Linux', 'Excel', 7, 6),
+(522, '22', 'Talbi', 'Houssem', 'M', '2004-04-04', 'Rue du Marché N°22', 'Mostaganem', 'Windows,Web', 'Word', 3, 3);
+
+-- -----------------------------------------------------
+-- 2. INSERT SAMPLE GRADES (for testing Bulletin and Moyenne)
+-- -----------------------------------------------------
+INSERT INTO `notes` (`Num_Etudiant`, `Code_Module`, `Note`) VALUES
+-- Student 1 (Zineb - Filière 3)
+('1', 'PROG201', 14.50), 
+('1', 'ALGO201', 11.25),
+('1', 'RESAU310', 16.00), -- New CS Module
+-- Student 12 (Tarik - Filière 6)
+('12', 'LIT605', 9.00), 
+('12', 'GEOG610', 12.50),
+-- Student 17 (Bilal - Filière 5)
+('17', 'ALGE260', 18.50),
+('17', 'MEC515', 10.00),
+-- Student 22 (Houssem - Filière 3)
+('22', 'PROG201', 15.00),
+('22', 'AGILE320', 13.00);
+
+
+-- -----------------------------------------------------
+-- 3. INSERT SAMPLE SPORTS LINKS
+-- -----------------------------------------------------
+INSERT INTO `etudiant_sports` (`id_etudiant`, `id_sport`) VALUES
+(501, 3), (501, 1), -- Zineb: Tennis, Football
+(512, 1), -- Tarik: Football
+(518, 4), -- Nour: Natation
+(522, 2), (522, 6); -- Houssem: Basketball, Volleyball
+
+COMMIT;
